@@ -7,12 +7,9 @@ library(tidyr)
 gdpr_violations <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv')
 
 
-#First I separate the colums I want to keep. I'm interested
-#in the articles violated but they are in the same column. 
-#I separate them using str_split in the | and then, with unnest
-#I create a row for each article violated.
-#Then I use str_sub to get only the numbers, as I'm not interested
-#in the subarticles violated. Besides, each has a different notation.
+#First I separate the colums I want to keep. I'm interested in the articles violated but they are in the same column. 
+#I separate them using str_split in the | and then, with unnest, I create a row for each article violated.
+#Then I use str_sub to get only the numbers, as I'm not interested in the subarticles violated. Besides, each has a different notation.
 
 
 violations_art <- gdpr_violations %>% select(id, 
@@ -26,10 +23,8 @@ violations_art <- gdpr_violations %>% select(id,
   unnest(article_violated) %>%
   mutate(article_violated = str_sub (article_violated, 4, 8)) 
 
-#In order to get the number I convert the articles into a vector,
-#and apply gsub so I get only the digits, then I put it back on
-#the data frame.I adjust to remove the . and then remove those rows
-#that didn't have an article number (4)
+#In order to get the number I convert the articles into a vector, and apply gsub so I get only the digits, then I put it back on
+#the data frame.I adjust to remove the . and then remove those rows that didn't have an article number (4)
 
 vector_art <- violations_art$article_violated
 
@@ -47,16 +42,14 @@ violations_art <- violations_art%>%
   rename (article_violated = article)
 
 
-#Here I group by article violated and obtain the number of times
-#than an article was violated, globally. 
+#Here I group by article violated and obtain the number of times than an article was violated, globally. 
 
 violations_gr_art<- violations_art %>% group_by(article_violated)%>%
   summarize (cases_per_article = n_distinct(id)) %>%
   arrange(desc(cases_per_article))
 
 
-#I can see the article that gets violated the most is 5. 
-#Now I want to represent it. 
+#I can see the article that gets violated the most is 5. Now I want to represent it. 
 
 plot_violations_art <- ggplot(violations_gr_art, 
                               aes(x = reorder(article_violated, cases_per_article),
@@ -96,10 +89,8 @@ plot_violations_art
 
 
 
-#Next I want to see which articles were the most expensive to violate. 
-#For that, I group by article and obtain both the number of times that
-#the article was violated and the total amount of fines. Then I get
-#the average price paid for each fine of each article.
+#Next I want to see which articles were the most expensive to violate. For that, I group by article and obtain both the number of times that
+#the article was violated and the total amount of fines. Then I get the average price paid for each fine of each article.
 
 violations_price<- violations_art %>% group_by(article_violated)%>%
   summarize (cases_per_article = n_distinct(id),
@@ -108,11 +99,9 @@ violations_price<- violations_art %>% group_by(article_violated)%>%
   arrange(desc(cases_per_article))
 
 
-#Finally, I represent it in a bar plot (using geom_col instead of geom_bar)
-#The height represents the price of each article, they were very diverse
+#Finally, I represent it in a bar plot (using geom_col instead of geom_bar). The height represents the price of each article, they were very diverse
 #so I used the logaritmic scale. 
-#The color represents the number of times the article was violated. 
-#It's mostly blue because the majority of the articles were violated
+#The color represents the number of times the article was violated. It's mostly blue because the majority of the articles were violated
 #just a few times (except 6, 5, and 32, as we saw before)
 
  plot_price<- ggplot(violations_price, 
