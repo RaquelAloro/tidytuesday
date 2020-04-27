@@ -129,7 +129,7 @@ violations_price<- violations_art %>% group_by(article_violated)%>%
             x=10, y=5e6)+
    annotate("curve", x=10, y = 3e6, xend=17, yend=7e5, curvature=0.3,
             arrow = arrow(length=unit(2, "mm")))+
-   annotate("text", label = "Art. 7 is the most", size=3.5,
+   annotate("text", label = "Art. 4 is the most", size=3.5,
             x=23, y=7.5e7)+
    annotate("text", label = "expensive one", size=3.5,
             x=23, y=4e7)
